@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-import re
 from pymongo import MongoClient
 
 
@@ -19,10 +18,13 @@ def movieTitle(item):
 def getType(item):
     movieTag = ''
     for tag in item.find(class_="ec-tags").find_all('a'):
-        if tag.text.find("片") and movieTag == '':
+        if tag.text.find('片') > 0 and movieTag == '':
             movieTag = movieTag + tag.text
-        elif tag.text.find("片") > 0:
+        elif tag.text.find('片') > 0:
             movieTag = movieTag + ',' + tag.text
+
+    if movieTag == '':
+        movieTag = item.find(class_="ec-tags").find('a').text
     
     return movieTag
 
@@ -55,6 +57,7 @@ if __name__ == '__main__':
     url = ["https://news.agentm.tw/category/%E9%9B%BB%E5%BD%B1%E5%BD%B1%E8%A9%95/page/{}/"
         .format(pn) for pn in range(1,34)]
 
+    url[0] = "https://news.agentm.tw/category/%E9%9B%BB%E5%BD%B1%E5%BD%B1%E8%A9%95/"
     count = 1
     for page in url:
         try:
@@ -65,5 +68,6 @@ if __name__ == '__main__':
             count+=1
         except:
             print(page)
+            count+=1
 
 
